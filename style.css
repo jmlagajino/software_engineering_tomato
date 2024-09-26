@@ -1,0 +1,215 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #000428, #004e92);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column; 
+}
+
+/* Navbar Styles */
+.navbar {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 15px 0;
+}
+
+.navbar ul {
+    list-style-type: none;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar li {
+    display: inline;
+    margin: 0 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    border: 2px solid transparent;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.navbar a:hover {
+    background-color: white;
+    color: #000;
+    border-color: #000;
+    transform: scale(1.05);
+}
+
+/* Main Content */
+.main-content {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: flex-start; 
+    text-align: left; 
+    flex-grow: 1; 
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 20px; 
+    animation: textZoomIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+/* Image and Buttons */
+.image-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; 
+    margin-bottom: 20px; 
+}
+
+button, .btn {
+    background-color: #004e92;
+    border: 2px solid #ffffff;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    margin: 0 10px; 
+}
+
+button:hover, .btn:hover {
+    background-color: #0061a8;
+    border-color: #f73535;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+}
+
+/* Welcome Heading Styles */
+.welcome-heading {
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    background: linear-gradient(to right, #FF4500, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    letter-spacing: 2px;
+    align-self: flex-start; 
+    margin-left: 20px; 
+    margin-bottom: 30px; 
+}
+
+/* Capture Preview Styles */
+.capture-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0; 
+}
+
+#video {
+    border: 2px solid #fff;
+    margin-bottom: 10px; 
+}
+
+#canvas {
+    display: none; 
+    border: 2px solid #fff;
+}
+
+/* Image to display captured image */
+#capturedImage {
+    display: none; 
+    margin-top: 20px; 
+    max-width: 100%; 
+    height: auto; 
+}
+
+/* Form Styles */
+#imageForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    margin-top: 10px; 
+}
+
+/* Style for Predict the Disease button */
+#imageForm .btn {
+    margin-top: 10px; 
+}
+
+
+/* Centered Info Box Styling */
+.info-box {
+    background: rgba(0, 67, 153, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    width: 50%;
+    animation: fadeInUp 0.8s ease forwards;
+    opacity: 1; 
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    color: #fff;
+    margin: 20px auto;
+    padding: 20px; 
+}
+
+/* Header Styles */
+.info-box h2 {
+    font-size: 24px;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+/* Paragraph Styles */
+.info-box p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
+/* Highlighted Text Style */
+.info-box .highlight {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 600;
+    background: #004e92;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

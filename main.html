@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tomato Disease Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="navbar">
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </div>
+
+    <div class="image-container">
+        <img class="background-image" src="images/mainlogo.jpg" alt="Background">
+    </div>
+
+    <div class="main-content">
+        <h1 class="welcome-heading">Welcome to Automatoes</h1>
+        <div class="buttons">
+            <button class="btn" id="captureButton">Capture Image</button>
+            <input type="file" id="uploadImage" accept="image/*" style="display:none;">
+            <button class="btn" id="uploadButton" onclick="document.getElementById('uploadImage').click();">Upload Image</button>
+        </div>
+
+        <div class="capture-preview" style="display: none;">
+            <canvas id="canvas" width="640" height="480" style="display:none;"></canvas> 
+            <video id="video" width="640" height="480" autoplay></video> 
+            <div class="capture-controls">
+                <button id="snap" class="btn capture">Capture Photo</button> 
+                <img id="capturedImage" style="display:none; margin-top: 10px;" alt="Captured Image"> 
+                
+                <form id="imageForm" style="display:none; margin-top: 10px;">
+                    <input type="hidden" id="imageData" name="imageData">
+                    <button type="submit" class="btn">Predict the Disease</button>
+                </form>
+            </div>
+        </div>            
+
+        <div class="info-box">
+            <span class="highlight">Tomato Disease Detection</span>
+            <h2>Welcome to our website...!</h2>
+            <p>This website helps you identify tomato diseases using a captured photo or by selecting a photo from your files. The system is connected to a deep learning model for predicting the disease. Use it to take specific precautions and measures to control the identified diseases.</p>
+            <p>Currently, our platform only detects some common diseases, but we plan to expand coverage in the future. Note: Predictions might not always be accurate.</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
