@@ -160,6 +160,30 @@ button:hover, .btn:hover {
     margin-top: 10px; 
 }
 
+/* Prediction Status Styles */
+.prediction-status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* Prediction Result Styles */
+.prediction-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#predictedDisease {
+    font-size: 24px;
+    font-weight: bold;
+    color: #00ff00;
+    margin-bottom: 20px;
+}
 
 /* Centered Info Box Styling */
 .info-box {
@@ -185,31 +209,41 @@ button:hover, .btn:hover {
 
 /* Paragraph Styles */
 .info-box p {
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1.6;
+    color: #f5f5f5;
+    text-align: justify;
     margin: 10px 0;
 }
 
-/* Highlighted Text Style */
-.info-box .highlight {
-    display: inline-block;
-    font-size: 14px;
-    font-weight: 600;
-    background: #004e92;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+/* Highlight Text Styles */
+.highlight {
+    color: #ffa500;
+    font-weight: bold;
+    font-size: 26px;
+    text-decoration: underline;
 }
 
-/* Keyframes */
-@keyframes fadeInUp {
+/* Text Animation */
+@keyframes textZoomIn {
     from {
+        transform: scale(0.8);
         opacity: 0;
-        transform: translateY(20px);
     }
     to {
+        transform: scale(1);
         opacity: 1;
+    }
+}
+
+/* Fade In Animation */
+@keyframes fadeInUp {
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    100% {
         transform: translateY(0);
+        opacity: 1;
     }
 }

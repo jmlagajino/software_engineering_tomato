@@ -7,13 +7,16 @@ const snapButton = document.getElementById('snap');
 const capturePreview = document.querySelector('.capture-preview');
 const imageForm = document.getElementById('imageForm');
 const imageDataInput = document.getElementById('imageData');
+const predictionStatus = document.getElementById('predictionStatus');
+const predictionResult = document.getElementById('predictionResult');
+const predictAnotherButton = document.getElementById('predictAnother');
 
 // Function to start the video stream
 function startVideoStream() {
     navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
-            video.srcObject = stream; // Link the stream to the video element
-            video.play(); // Start playing the video
+            video.srcObject = stream; 
+            video.play(); 
         })
         .catch((err) => {
             console.error("Error accessing camera: " + err);
@@ -22,19 +25,24 @@ function startVideoStream() {
 
 // Show the capture preview when the capture button is clicked
 captureButton.addEventListener('click', () => {
-    capturePreview.style.display = 'block'; // Show the video stream container
-    startVideoStream(); // Start the video stream
+    capturePreview.style.display = 'block'; 
+    startVideoStream(); 
 });
 
 // Capture the photo
 snapButton.addEventListener('click', () => {
     const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, canvas.width, canvas.height); // Draw the video frame to the canvas
-    const imageData = canvas.toDataURL('image/png'); // Get image data from the canvas
-    capturedImage.src = imageData; // Set the captured image source
-    capturedImage.style.display = 'block'; // Show the captured image
-    imageDataInput.value = imageData; // Store the image data in the hidden input field for form submission
-    imageForm.style.display = 'block'; // Show the form to submit the image
+    context.drawImage(video, 0, 0, canvas.width, canvas.height); 
+    const imageData = canvas.toDataURL('image/png'); 
+    capturedImage.src = imageData; 
+    capturedImage.style.display = 'block'; 
+    imageDataInput.value = imageData; 
+    imageForm.style.display = 'block';
+
+    // Automatically submit the form after capturing the image
+    setTimeout(() => {
+        imageForm.requestSubmit(); 
+    }, 1000); 
 });
 
 // Event listener for the upload image input
@@ -44,36 +52,67 @@ uploadImage.addEventListener('change', (event) => {
         const reader = new FileReader();
         reader.onload = function(e) {
             const uploadedData = e.target.result;
-            capturedImage.src = uploadedData; // Set uploaded image source
-            capturedImage.style.display = 'block'; // Show the uploaded image
-            imageDataInput.value = uploadedData; // Store the uploaded image data for form submission
-            imageForm.style.display = 'block'; // Show the form to submit the image
+            capturedImage.src = uploadedData; 
+            capturedImage.style.display = 'block'; 
+            imageDataInput.value = uploadedData; 
+            imageForm.style.display = 'block'; 
+
+            // Automatically submit the form after uploading the image
+            setTimeout(() => {
+                imageForm.requestSubmit(); 
+            }, 1000); 
         };
-        reader.readAsDataURL(file); // Read the file as a data URL
+        reader.readAsDataURL(file); 
     }
 });
 
 // Handle form submission
 imageForm.addEventListener('submit', (event) => {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); 
+    showPredictionStatus();
 
-    const imageData = imageDataInput.value; // Get the image data
+    const imageData = imageDataInput.value; 
+    // Add a delay before sending the request to simulate loading effect
+    setTimeout(() => {
+        fetch('/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: imageData })
+        })
+        .then(response => response.json())
+        .then(result => {
+            // Show the prediction result
+            showPredictionResult(result.prediction);
+        })
+        .catch(error => {
+            console.error('Error:', error); 
+            alert('An error occurred while predicting the disease.');
+        });
+    }, 3000); 
+});
 
-    // Send the image data to the backend using fetch
-    fetch('/predict', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ image: imageData }) // Send the image data
-    })
-    .then(response => response.json())
-    .then(result => {
-        alert('Prediction: ' + result.prediction); // Show prediction result
-    })
-    .catch(error => {
-        console.error('Error:', error); // Log any errors
-    });
+
+// Show prediction status
+function showPredictionStatus() {
+    predictionResult.style.display = 'none';
+    predictionStatus.style.display = 'block';
+}
+
+// Show prediction result
+function showPredictionResult(predictedText) {
+    predictionStatus.style.display = 'none';
+    document.getElementById("predictedDisease").innerText = predictedText;
+    predictionResult.style.display = 'block';
+}
+
+// Add event listener for the "Predict Another" button
+predictAnotherButton.addEventListener("click", function () {
+    predictionResult.style.display = 'none';
+    capturePreview.style.display = 'none';
+    capturedImage.style.display = 'none';
+    imageForm.style.display = 'none';
 });
 
 // Wait for the DOM to fully load
@@ -84,14 +123,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Trigger animations after a slight delay
     setTimeout(() => {
-        h1.style.opacity = 1; // Make the heading visible
-    }, 100); // Short delay for h1
+        h1.style.opacity = 1;
+    }, 100); 
 
     setTimeout(() => {
-        mainContent.style.opacity = 1; // Make main content visible
-    }, 300); // Delay for main content
+        mainContent.style.opacity = 1; 
+    }, 300);
 
     setTimeout(() => {
-        infoBox.style.opacity = 1; // Make info box visible
-    }, 1200); // Delay for info box
+        infoBox.style.opacity = 1; 
+    }, 1200); 
 });
