@@ -84,7 +84,7 @@ imageForm.addEventListener('submit', (event) => {
         .then(response => response.json())
         .then(result => {
             // Show the prediction result
-            showPredictionResult(result.prediction);
+            showPredictionResult(result);  // Pass the entire result, not just result.prediction
         })
         .catch(error => {
             console.error('Error:', error); 
@@ -93,7 +93,6 @@ imageForm.addEventListener('submit', (event) => {
     }, 3000); 
 });
 
-
 // Show prediction status
 function showPredictionStatus() {
     predictionResult.style.display = 'none';
@@ -101,9 +100,11 @@ function showPredictionStatus() {
 }
 
 // Show prediction result
-function showPredictionResult(predictedText) {
+function showPredictionResult(result) {
     predictionStatus.style.display = 'none';
-    document.getElementById("predictedDisease").innerText = predictedText;
+    document.getElementById("predictedDisease").innerText = `Disease: ${result.prediction}`;
+    document.getElementById("diseaseDefinition").innerText = `Definition: ${result.definition}`;
+    document.getElementById("diseasePrevention").innerText = `Prevention: ${result.prevention}`;
     predictionResult.style.display = 'block';
 }
 
