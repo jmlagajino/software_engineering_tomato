@@ -111,7 +111,6 @@ button:hover, .btn:hover {
     font-size: 48px;
     font-weight: 700;
     background: linear-gradient(to right, #FF4500, #FFA500);
-    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     margin: 0;

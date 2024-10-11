@@ -15,8 +15,8 @@ const predictAnotherButton = document.getElementById('predictAnother');
 function startVideoStream() {
     navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
-            video.srcObject = stream; 
-            video.play(); 
+            video.srcObject = stream;
+            video.play();
         })
         .catch((err) => {
             console.error("Error accessing camera: " + err);
@@ -25,24 +25,24 @@ function startVideoStream() {
 
 // Show the capture preview when the capture button is clicked
 captureButton.addEventListener('click', () => {
-    capturePreview.style.display = 'block'; 
-    startVideoStream(); 
+    capturePreview.style.display = 'block';
+    startVideoStream();
 });
 
 // Capture the photo
 snapButton.addEventListener('click', () => {
     const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, canvas.width, canvas.height); 
-    const imageData = canvas.toDataURL('image/png'); 
-    capturedImage.src = imageData; 
-    capturedImage.style.display = 'block'; 
-    imageDataInput.value = imageData; 
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL('image/png');
+    capturedImage.src = imageData;
+    capturedImage.style.display = 'block';
+    imageDataInput.value = imageData;
     imageForm.style.display = 'block';
 
     // Automatically submit the form after capturing the image
     setTimeout(() => {
-        imageForm.requestSubmit(); 
-    }, 1000); 
+        imageForm.requestSubmit();
+    }, 1000);
 });
 
 // Event listener for the upload image input
@@ -50,49 +50,57 @@ uploadImage.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const uploadedData = e.target.result;
-            capturedImage.src = uploadedData; 
-            capturedImage.style.display = 'block'; 
-            imageDataInput.value = uploadedData; 
-            imageForm.style.display = 'block'; 
+            capturedImage.src = uploadedData;
+            capturedImage.style.display = 'block';
+            imageDataInput.value = uploadedData;
+            imageForm.style.display = 'block';
 
             // Automatically submit the form after uploading the image
             setTimeout(() => {
-                imageForm.requestSubmit(); 
-            }, 1000); 
+                imageForm.requestSubmit();
+            }, 1000);
         };
-        reader.readAsDataURL(file); 
+        reader.readAsDataURL(file);
     }
 });
 
 // Handle form submission
 imageForm.addEventListener('submit', (event) => {
-    event.preventDefault(); 
+    event.preventDefault();
     showPredictionStatus();
 
-    const imageData = imageDataInput.value; 
+    const imageData = imageDataInput.value;
     // Add a delay before sending the request to simulate loading effect
     setTimeout(() => {
-        fetch('/predict', {
+        fetch('https://universe.roboflow.com/anthracnose/anthracnoseproject/dataset/5', {  // Changed to Flask server endpoint
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: JSON.stringify({ image: imageData })
+            body: new URLSearchParams({ imageData: imageData })
         })
         .then(response => response.json())
         .then(result => {
-            // Show the prediction result
-            showPredictionResult(result.prediction);
+            if (result.error) {
+                alert('Error: ' + result.error);
+            } else {
+                showPredictionResult({
+                    name: result.disease,
+                    image: imageData, // Using the same imageData for the prediction result
+                    description: result.description,
+                    causes: result.causes,
+                    prevention: result.prevention
+                });
+            }
         })
         .catch(error => {
-            console.error('Error:', error); 
+            console.error('Error:', error);
             alert('An error occurred while predicting the disease.');
         });
-    }, 3000); 
+    }, 3000);
 });
-
 
 // Show prediction status
 function showPredictionStatus() {
@@ -100,10 +108,23 @@ function showPredictionStatus() {
     predictionStatus.style.display = 'block';
 }
 
-// Show prediction result
-function showPredictionResult(predictedText) {
+// Show prediction result with additional information (description, causes, prevention)
+function showPredictionResult(predictionData) {
     predictionStatus.style.display = 'none';
-    document.getElementById("predictedDisease").innerText = predictedText;
+
+    // Update the predicted text
+    document.getElementById("predictedDisease").innerText = predictionData.name;
+
+    // Update the image of the tomato (or other predictions)
+    const resultImage = document.getElementById("resultImage");
+    resultImage.src = predictionData.image;
+    resultImage.style.display = 'block';
+
+    // Update description, causes, and prevention
+    document.getElementById("description").innerText = predictionData.description;
+    document.getElementById("causes").innerText = predictionData.causes;
+    document.getElementById("prevention").innerText = predictionData.prevention;
+
     predictionResult.style.display = 'block';
 }
 
@@ -124,13 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Trigger animations after a slight delay
     setTimeout(() => {
         h1.style.opacity = 1;
-    }, 100); 
+    }, 100);
 
     setTimeout(() => {
-        mainContent.style.opacity = 1; 
+        mainContent.style.opacity = 1;
     }, 300);
 
     setTimeout(() => {
-        infoBox.style.opacity = 1; 
-    }, 1200); 
+        infoBox.style.opacity = 1;
+    }, 1200);
 });

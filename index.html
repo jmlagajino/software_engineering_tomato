@@ -3,10 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tomato Disease Detection</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>YOLOv8 Object Detection</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=San+Francisco:wght@400;500;700&display=swap">
+    <style>
+        body {
+            font-family: 'San Francisco', sans-serif;
+            background: linear-gradient(to bottom, #121212, #FFA500); /* Gradient background */
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 60px; /* Ensure space for the footer */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; 
+            position: relative; /* Allows absolute positioning of child elements */
+        }
+
+        /* Centering Container */
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute; /* Keeps it centered */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centering magic */
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            width: 100%;
+            background-color: rgba(30, 30, 30, 0.9); /* Darker navbar with slight transparency */
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(255, 165, 0, 0.5); /* Orange shadow */
+            position: fixed; /* Fixes the navbar at the top */
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar li {
+            margin: 0 30px;
+        }
+
+        .navbar a {
+            color: #ffa500; /* Orange text */
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 15px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: #ff8c00; /* Darker orange on hover */
+        }
+
+        /* Image and Buttons */
+        .image-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .background-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+
+        /* Main Content Styles */
+        h1 {
+            font-size: 48px;
+            margin: 40px 0;
+            text-align: center;
+            color: #ffa500; /* Orange */
+            animation: textZoomIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes textZoomIn {
+            to {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Add some basic styling for layout */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .image-container {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .camera-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        video {
+            width: 100%;
+            max-width: 300px; /* Adjust the size of the video */
+            display: none; /* Hide the video by default */
+        }
+
+        #resultImage {
+            max-width: 300px;
+            display: none; /* Hide the image until it's needed */
+        }
+
+        input[type="file"], button {
+            background-color: #ffa500; /* Orange button */
+            border: none;
+            color: white;
+            padding: 15px 25px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ff8c00; /* Darker orange on hover */
+        }
+
+        #results {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            margin: 20px;
+            background-color: #1e1e1e; /* Darker background for results */
+            color: #ffffff; /* White text */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(255, 165, 0, 0.5); /* Orange shadow */
+            overflow-wrap: break-word;
+            text-align: left;
+        }
+
+        #resultImage {
+            margin: 20px;
+            max-width: 100%;
+            height: auto;
+            display: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(255, 165, 0, 0.5); /* Orange shadow */
+        }
+
+        /* Spinner Styles */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #ffa500; /* Orange spinner */
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .box {
+            position: absolute;
+            border: 2px solid red;
+            border-radius: 3px;
+            color: red;
+            font-size: 14px;
+            padding: 2px;
+            background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+            pointer-events: none;
+        }
+        
+        /* Disease Details Styles */
+        #diseaseDetails {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            margin: 20px;
+            background-color: #1e1e1e; /* Darker background for details */
+            color: #ffffff; /* White text */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(255, 165, 0, 0.5); /* Orange shadow */
+            overflow-wrap: break-word;
+            text-align: left;
+        }
+
+        .footer {
+            width: 100%;
+            background-color: #1e1e1e; /* Darker footer */
+            color: #ffffff; /* White text */
+            text-align: center;
+            padding: 20px 0;
+            position: fixed; /* Make the footer fixed */
+            bottom: 0; /* Align it to the bottom */
+            left: 0; /* Ensure it spans the entire width */
+            box-shadow: 0 -2px 5px rgba(255, 165, 0, 0.5); /* Orange shadow */
+            z-index: 1000; /* Ensure it's on top of other elements */
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
@@ -17,48 +235,238 @@
         </ul>
     </div>
 
-    <div class="image-container">
-        <img class="background-image" src="images/mainlogo.jpg" alt="Background">
-    </div>
-
-    <div class="main-content">
-        <h1 class="welcome-heading">Welcome to Automatoes</h1>
-        <div class="buttons">
-            <button class="btn" id="captureButton">Capture Image</button>
-            <input type="file" id="uploadImage" accept="image/*" style="display:none;">
-            <button class="btn" id="uploadButton" onclick="document.getElementById('uploadImage').click();">Upload Image</button>
+    <div class="container">
+        <div class="image-container">
+            <img class="background-image" src="images/mainlogo.jpg" alt="Background">
         </div>
 
-        <div class="capture-preview" style="display: none;">
-            <canvas id="canvas" width="640" height="480" style="display:none;"></canvas> 
-            <video id="video" width="640" height="480" autoplay></video> 
-            <div class="capture-controls">
-                <button id="snap" class="btn capture">Capture Photo</button> 
-                <img id="capturedImage" style="display:none; margin-top: 10px;" alt="Captured Image"> 
-                
-                <form id="imageForm" style="display:none; margin-top: 10px;">
-                    <input type="hidden" id="imageData" name="imageData">
-                    <button type="submit" class="btn">Predict the Disease</button>
-                </form>
+        <div class="camera-container">
+            <h1>AUTOMATOES</h1>
+            <button id="startCameraButton">Start Camera</button>
+            <video id="video" autoplay></video>
+            <button id="captureButton" style="display: none;">Capture</button>
+            <input type="file" id="imageInput" accept="image/*" />
+            <button id="detectButton" style="display: none;">Detect</button>
+            <div id="spinner" class="spinner" style="display: none;"></div>
+            <pre id="results"></pre>
+            <div id="resultContainer" style="position: relative;">
+                <img id="resultImage" src="" alt="Detected Image" />
             </div>
-        </div>            
-
-        <div class="prediction-status" id="predictionStatus" style="display: none;">
-            <p>Predicting...</p>
-        </div>
-
-        <div class="prediction-result" id="predictionResult" style="display: none;">
-            <p id="predictedDisease"></p>
-            <button id="predictAnother" class="btn">Predict Another</button>
-        </div>
-
-        <div class="info-box">
-            <span class="highlight">Tomato Disease Detection</span>
-            <h2>Welcome to our website...!</h2>
-            <p>This website helps you identify tomato diseases using a captured photo or by selecting a photo from your files. The system is connected to a deep learning model for predicting the disease. Use it to take specific precautions and measures to control the identified diseases.</p>
-            <p>Currently, our platform only detects some common diseases, but we plan to expand coverage in the future. Note: Predictions might not always be accurate.</p>
+            <div id="diseaseDetails"></div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+
+    <script>
+        // Disease data object
+        const diseaseData = {
+            "Early Blight": {
+                description: "Dark, concentric rings appear on older leaves, leading to leaf drop and weakened plants.",
+                causes: "Fungal Spores: Many tomato diseases, like Early Blight and Fusarium Wilt, are caused by fungal spores in the soil or on plant debris.",
+                prevention: "Crop Rotation: Rotate tomato plants with non-host crops like beans or corn every 3-4 years to avoid disease buildup."
+            },
+            "Powdery Mildew": {
+                description: "Appears as white, powdery patches on the leaves, stems, and sometimes the fruit.",
+                causes: "Moisture: High humidity and excess moisture from overhead irrigation can promote the spread of fungal infections like Powdery Mildew.",
+                prevention: "Resistant Varieties: Use disease-resistant varieties to minimize the risk of infections like Fusarium Wilt and Early Blight."
+            },
+            "Anthracnose": {
+                description: "Common fungal disease on ripe tomato fruit showing small circular spots with yellow halos.",
+                causes: "Caused by the fungus Colletotrichum coccodes, which can infect leaves, flowers, fruit, and stem tissues.",
+                prevention: "Minimize or avoid overhead irrigation and harvest fruit promptly."
+            },
+            "Tomato Spotted Wilt Virus": {
+                description: "This virus is spread by insects called thrips. Infected plants cannot be cured.",
+                causes: "Spread by thrips, which are pests that can damage crops.",
+                prevention: "Cultural practices, garden sanitation, weed control, and reflective mulch help reduce infections."
+            },
+            "Tomato Fruit Crack": {
+                description: "Can be avoided by maintaining consistent soil moisture, especially important after fruit set.",
+                causes: "Big swings in water availability, causing the tomato skins to crack.",
+                prevention: "Maintain consistent soil moisture and avoid excess water after fruit set."
+            },
+            "Botrytis Cinerea": {
+                description: "Dense velvety gray-brown spore mass on infected tissue.",
+                causes: "Warm temperatures, high humidity, and prolonged wetness facilitate fungus inoculation.",
+                prevention: "Good sanitation practices, such as pruning plants and clearing debris."
+            },
+            "Blossom Drop": {
+                description: "Healthy tomato plants set flower blossoms, but they dry up and fall off.",
+                causes: "Temperature extremes, lack of pollination, and plant stress.",
+                prevention: "Ensure consistent watering and proper disease control."
+            },
+            "Phytophthora Root Rot": {
+                description: "Worst damage occurs in compacted, poorly drained, and overwatered soils.",
+                causes: "Compacted soils and soil-borne fungi thriving in excessive moisture conditions.",
+                prevention: "Double-dig beds, amend with organic matter, and maintain consistent moisture."
+            },
+            "Southern Blight": {
+                description: "Hot, dry weather alternating with warm summer rains creates perfect conditions for this fungus.",
+                causes: "Presence of decomposing plant matter in the topsoil.",
+                prevention: "Remove dead leaves and plant debris to control this fungus."
+            },
+            "Catfacing": {
+                description: "Caused by abnormal development of the flower bud before blooming.",
+                causes: "Prolonged cool weather and high soil nitrogen levels.",
+                prevention: "Maintain temperatures above 16°C and avoid excessive pruning."
+            }
+        };
+
+        const video = document.getElementById('video');
+        const startCameraButton = document.getElementById('startCameraButton');
+        const captureButton = document.getElementById('captureButton');
+        const detectButton = document.getElementById('detectButton');
+        const resultImage = document.getElementById('resultImage');
+        const imageInput = document.getElementById('imageInput');
+
+        // Function to start the camera
+        startCameraButton.addEventListener('click', () => {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    video.srcObject = stream;
+                    video.style.display = 'block'; // Show the video
+                    captureButton.style.display = 'block'; // Show the capture button
+                    startCameraButton.style.display = 'none'; // Hide the start button
+                })
+                .catch((error) => {
+                    console.error("Error accessing the camera:", error);
+                });
+        });
+
+        // Capture image
+        captureButton.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0);
+            const imageData = canvas.toDataURL('image/png');
+            
+            // Display the captured image
+            resultImage.src = imageData;
+            resultImage.style.display = 'block'; // Show the captured image
+            
+            // Set the imageData to the file input or process as needed
+            const blob = dataURLToBlob(imageData);
+            const file = new File([blob], 'captured_image.png', { type: 'image/png' });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            imageInput.files = dataTransfer.files;
+
+            // Show the detect button when an image is available
+            detectButton.style.display = 'block';
+        });
+
+        // Handle file input
+        imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    resultImage.src = e.target.result; // Set the image source to the selected file
+                    resultImage.style.display = 'block'; // Show the captured image
+                    detectButton.style.display = 'block'; // Show the detect button
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function dataURLToBlob(dataURL) {
+            const byteString = atob(dataURL.split(',')[1]);
+            const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
+        }
+
+        // Detect disease when the detect button is clicked
+        detectButton.addEventListener('click', () => {
+            const imgSrc = resultImage.src;
+            detectDisease(imgSrc);
+        });
+
+        function detectDisease(imageSrc) {
+            // Implement your disease detection logic here
+            console.log("Detecting disease for:", imageSrc);
+            // Example: Display a mock result
+            document.getElementById('results').textContent = "Detected disease: (mock result)";
+            document.getElementById('diseaseDetails').textContent = "Details: (mock details)";
+        }
+    
+        document.getElementById('detectButton').addEventListener('click', async () => {
+            const input = document.getElementById('imageInput');
+            const file = input.files[0];
+    
+            if (!file) {
+                alert('Please select an image.');
+                return;
+            }
+    
+            const formData = new FormData();
+            formData.append('image', file);
+    
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'block';
+    
+            try {
+                const response = await fetch('http://localhost:5000/detect', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                const data = await response.json();
+                document.getElementById('results').textContent = JSON.stringify(data.detections, null, 2);
+    
+                const resultImage = document.getElementById('resultImage');
+                resultImage.src = data.image_url;
+                resultImage.style.display = 'block';
+    
+                const resultContainer = document.getElementById('resultContainer');
+                resultContainer.querySelectorAll('.box').forEach(box => box.remove());
+    
+                // Clear previous disease details
+                const diseaseDetailsContainer = document.getElementById('diseaseDetails');
+                diseaseDetailsContainer.innerHTML = ''; // Clear previous details
+                
+                const seenDiseases = new Set(); // Track seen diseases
+    
+                data.detections.forEach(detection => {
+                    const box = document.createElement('div');
+                    box.className = 'box';
+                    box.style.left = `${detection.box[0]}px`;
+                    box.style.top = `${detection.box[1]}px`;
+                    box.style.width = `${detection.box[2] - detection.box[0]}px`;
+                    box.style.height = `${detection.box[3] - detection.box[1]}px`;
+                    box.textContent = detection.name;
+                    resultContainer.appendChild(box);
+    
+                    // Get disease details
+                    const diseaseInfo = diseaseData[detection.name];
+                    if (diseaseInfo && !seenDiseases.has(detection.name)) {
+                        seenDiseases.add(detection.name); // Mark as seen
+                        const detailBox = document.createElement('div');
+                        detailBox.innerHTML = `
+                            <h3>${detection.name}</h3>
+                            <p><strong>Description:</strong> ${diseaseInfo.description}</p>
+                            <p><strong>Causes:</strong> ${diseaseInfo.causes}</p>
+                            <p><strong>Prevention:</strong> ${diseaseInfo.prevention}</p>
+                        `;
+                        diseaseDetailsContainer.appendChild(detailBox);
+                    }
+                });
+            } catch (error) {
+                document.getElementById('results').textContent = `Error: ${error.message}`;
+            } finally {
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
