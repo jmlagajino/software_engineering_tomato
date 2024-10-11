@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 body {
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(135deg, #000428, #004e92);
@@ -247,7 +247,6 @@ button:hover, .btn:hover {
         opacity: 1;
     }
 }
-=======
 /* General Body Styles */
 body {
     font-family: 'Roboto', sans-serif;
@@ -506,4 +505,4 @@ button:hover, .btn:hover {
         opacity: 1;
     }
 }
->>>>>>> 1ac94a66e38abf457576a0b413054a53960844a2
+
